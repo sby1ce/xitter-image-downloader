@@ -48,7 +48,10 @@ function listen(
   if ((message as Message).action !== "getImages") {
     return;
   }
-  sendResponse({ images: search(), poster: findPoster() });
+  sendResponse({
+    images: search(),
+    poster: findPoster(),
+  } satisfies ExtResponse);
 }
 
 browser.runtime.onMessage.addListener(listen);

@@ -49,7 +49,7 @@ async function main(): Promise<void> {
   select.append(...options.map(createOption));
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const poster: HTMLInputElement = document.querySelector(
-    'input[name="poster"',
+    'input[name="poster"]',
   )!;
   poster.value = response.poster;
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
