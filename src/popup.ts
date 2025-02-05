@@ -1,43 +1,7 @@
 import browser from "webextension-polyfill";
 
-import type { ExtResponse, Message } from "./content.ts";
-
-function constructFilename(
-  poster: string,
-  id: string,
-  timestamp: string,
-  index: number,
-): string {
-  // Timestamp is in ISO format UTC+0 and we take only the date part
-  const date = timestamp.split("T")[0];
-  return `${poster}_${id}_${date}_${index + 1}.png`;
-}
-
-async function download(event: SubmitEvent, data: ExtResponse): Promise<void> {
-  event.preventDefault();
-  const form = event.target as HTMLFormElement;
-  const body = new FormData(form);
-  const index: number = Number.parseInt(body.get("selected") as string);
-  const url: string = data.images[index];
-  const filename: string = constructFilename(
-    data.poster,
-    data.id,
-    data.timestamp,
-    index,
-  );
-  const downloadId: number | undefined = await browser.downloads.download({
-    url,
-    filename,
-    saveAs: true,
-  });
-  if (downloadId === undefined) {
-    console.error(browser.runtime.lastError);
-  }
-}
-
-function handleSubmit(data: ExtResponse): (event: SubmitEvent) => void {
-  return (event: SubmitEvent) => download(event, data).then(() => {}, console.error);
-}
+import type { ExtResponse, Message } from "./content/twitter.ts";
+import { handleSubmit } from "./download/twitter.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -46,7 +10,7 @@ function createOption(idx: number): HTMLOptionElement {
   return element;
 }
 
-async function searchTwitter(id: number): Promise<ExtResponse | null> {
+async function search<T>(id: number): Promise<T | null> {
   try {
     return await browser.tabs.sendMessage(id, {
       action: "getImages",
@@ -69,20 +33,18 @@ async function main(): Promise<void> {
   }
 
   let response: ExtResponse | null = null;
+  let submit: (event: SubmitEvent) => void;
   switch (domain) {
     case "x":
       // biome-ignore lint/style/noNonNullAssertion: trust me bro
-      response = await searchTwitter(tab.id!);
-      if (response === null) {
+      response = await search<ExtResponse>(tab.id!);
+      if (response === null || response.images.length < 1) {
         return;
       }
+      submit = handleSubmit(response);
       break;
     default:
       return;
-  }
-
-  if (response.images.length < 1) {
-    return;
   }
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
@@ -95,8 +57,8 @@ async function main(): Promise<void> {
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
   select.append(...response.images.keys().map(createOption));
-  
-  form.addEventListener("submit", handleSubmit(response));
+
+  form.addEventListener("submit", submit);
 }
 
 window.addEventListener("DOMContentLoaded", () =>

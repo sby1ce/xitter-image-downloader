@@ -48,7 +48,7 @@ function isLoggedIn(): boolean {
   );
 }
 
-function search(query: string): string[] {
+function findImages(query: string): string[] {
   const images: HTMLImageElement[] = Array.from(
     document.querySelectorAll(query),
   );
@@ -79,6 +79,14 @@ function parseUrlId(): string {
     .findLast((slug) => slug.length > 0)!;
 }
 
+function search(queries: DomQueries): [string[], string, string] {
+  return [
+    findImages(queries.images),
+    findPoster(queries.poster),
+    findTimestamp(queries.timestamp),
+  ];
+}
+
 function listen(
   message: unknown,
   _sender: browser.Runtime.MessageSender,
@@ -89,18 +97,8 @@ function listen(
   if ((message as Message).action !== "getImages") {
     return;
   }
-  let images: string[];
-  let poster: string;
-  let timestamp: string;
-  if (isLoggedIn()) {
-    images = search(logged.images);
-    poster = findPoster(logged.poster);
-    timestamp = findTimestamp(logged.timestamp);
-  } else {
-    images = search(notLogged.images);
-    poster = findPoster(notLogged.poster);
-    timestamp = findTimestamp(notLogged.timestamp);
-  }
+  const [images, poster, timestamp] = search(isLoggedIn() ? logged : notLogged);
+  
   sendResponse({
     images,
     poster,
