@@ -26,7 +26,7 @@ async function download(event: SubmitEvent): Promise<void> {
 function createOption(value: string, idx: number): HTMLOptionElement {
   const element = document.createElement("option");
   element.value = value;
-  element.textContent = idx.toString();
+  element.textContent = (idx + 1).toString();
   return element;
 }
 
