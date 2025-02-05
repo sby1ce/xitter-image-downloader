@@ -14,7 +14,7 @@
   "{{firefox}}.browser_action": {
     "default_popup": "src/popup.html"
   },
-  "permissions": ["activeTab", "scripting", "downloads"],
+  "permissions": ["activeTab", "tabs", "scripting", "downloads"],
   "content_scripts": [
     {
       "matches": ["*://x.com/*"],

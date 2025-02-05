@@ -10,7 +10,9 @@
     "check": "biome check --write ."
   },
   "devDependencies": {
-    "@types/webextension-polyfill": "^0.12.1"
+    "@types/webextension-polyfill": "^0.12.1",
+    "lightningcss": "^1.29.1",
+    "sass": "^1.83.4"
   },
   "dependencies": {
     "@biomejs/biome": "^1.9.4",

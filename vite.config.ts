@@ -19,4 +19,10 @@ export default defineConfig({
       watchFilePaths: ["package.json", "manifest.json"],
     }),
   ],
+  css: {
+    transformer: "lightningcss",
+  },
+  build: {
+    cssMinify: "lightningcss",
+  },
 });

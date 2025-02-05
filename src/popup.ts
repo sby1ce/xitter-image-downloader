@@ -43,28 +43,59 @@ function createOption(idx: number): HTMLOptionElement {
   return element;
 }
 
-async function main(): Promise<void> {
-  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-  let response: ExtResponse;
+async function searchTwitter(id: number): Promise<ExtResponse | null> {
   try {
-    // biome-ignore lint/style/noNonNullAssertion: trust me bro
-    response = await browser.tabs.sendMessage(tabs[0].id!, {
+    return await browser.tabs.sendMessage(id, {
       action: "getImages",
     } as Message);
   } catch (e) {
     console.warn(e);
+    return null;
+  }
+}
+
+async function main(): Promise<void> {
+  const tab: browser.Tabs.Tab = (
+    await browser.tabs.query({ active: true, currentWindow: true })
+  )[0];
+  const host = new URL(tab.url ?? "").host.split(".");
+  const tld = host.at(-1);
+  const domain = host.at(-2);
+  if (tld !== "com" || !domain) {
     return;
   }
-  const options = response.images;
+
+  let response: ExtResponse | null = null;
+  switch (domain) {
+    case "x":
+      // biome-ignore lint/style/noNonNullAssertion: trust me bro
+      response = await searchTwitter(tab.id!);
+      if (response === null) {
+        return;
+      }
+      break;
+    default:
+      return;
+  }
+
+  if (response.images.length < 1) {
+    return;
+  }
+
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const form = document.querySelector("form")!;
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const notice = document.querySelector("section")!;
+  form.classList.remove("hidden");
+  notice.classList.add("hidden");
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
-  select.append(...options.keys().map(createOption));
+  select.append(...response.images.keys().map(createOption));
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const data: HTMLInputElement = document.querySelector('input[name="data"]')!;
   data.value = JSON.stringify(response);
-  // biome-ignore lint/style/noNonNullAssertion: trust me bro
-  const form = document.querySelector("form")!;
+
   form.addEventListener("submit", download);
 }
 
