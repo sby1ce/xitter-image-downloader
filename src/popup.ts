@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 
-import type { ExtResponse, Message } from "./content/twitter.ts";
+import type { Message, TwitterResponse } from "./content/twitter.ts";
 import { handleSubmit } from "./download/twitter.ts";
 
 function createOption(idx: number): HTMLOptionElement {
@@ -32,12 +32,12 @@ async function main(): Promise<void> {
     return;
   }
 
-  let response: ExtResponse | null = null;
+  let response: TwitterResponse | null = null;
   let submit: (event: SubmitEvent) => void;
   switch (domain) {
     case "x":
       // biome-ignore lint/style/noNonNullAssertion: trust me bro
-      response = await search<ExtResponse>(tab.id!);
+      response = await search<TwitterResponse>(tab.id!);
       if (response === null || response.images.length < 1) {
         return;
       }

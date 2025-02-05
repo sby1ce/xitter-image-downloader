@@ -4,7 +4,7 @@ export interface Message {
   action: string;
 }
 
-export interface ExtResponse {
+export interface TwitterResponse {
   images: string[];
   poster: string;
   timestamp: string;
@@ -98,13 +98,13 @@ function listen(
     return;
   }
   const [images, poster, timestamp] = search(isLoggedIn() ? logged : notLogged);
-  
+
   sendResponse({
     images,
     poster,
     timestamp,
     id: parseUrlId(),
-  } satisfies ExtResponse);
+  } satisfies TwitterResponse);
 }
 
 browser.runtime.onMessage.addListener(listen);
