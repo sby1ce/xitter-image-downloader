@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 
 import type { Message, TwitterResponse } from "./content/twitter.ts";
-import { handleSubmit } from "./download/twitter.ts";
+import { checkTwitter, handleSubmit } from "./download/twitter.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     case "x":
       // biome-ignore lint/style/noNonNullAssertion: trust me bro
       response = await search<TwitterResponse>(tab.id!);
-      if (response === null || response.images.length < 1) {
+      if (checkTwitter(response)) {
         return;
       }
       submit = handleSubmit(response);
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
-  select.append(...response.images.keys().map(createOption));
+  select.append(...response.media.keys().map(createOption));
 
   form.addEventListener("submit", submit);
 }

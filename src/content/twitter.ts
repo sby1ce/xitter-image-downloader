@@ -4,39 +4,55 @@ export interface Message {
   action: string;
 }
 
+export interface Media {
+  image: boolean;
+  src: string;
+}
+
 export interface TwitterResponse {
-  images: string[];
+  media: Media[];
   poster: string;
   timestamp: string;
   id: string;
 }
 
 interface DomQueries {
-  images: string;
+  media: string;
   poster: string;
   timestamp: string;
 }
 
 // Selects the main post using the reply section as the indicator
 // alt="Image" excludes profile pictures
+// also capture GIFs (actually mp4)
 const logged: DomQueries = {
-  images:
-    'article:has(+ div[data-testid="inline_reply_offscreen"]) img[class][alt="Image"][draggable="true"]',
+  media:
+    'article:has(+ div[data-testid="inline_reply_offscreen"]) img[alt="Image"][draggable="true"], article:has(+ div[data-testid="inline_reply_offscreen"]) video',
   poster:
     'article:has(+ div[data-testid="inline_reply_offscreen"]) a > div > span',
   timestamp: 'article:has(+ div[data-testid="inline_reply_offscreen"]) time',
 };
 const notLogged: DomQueries = {
-  images: 'img[class][alt="Image"][draggable="true"]',
+  media: 'img[alt="Image"][draggable="true"], article video',
   poster: "article a > div > span",
   timestamp: "article time",
 };
 
-function transformUrl(img: HTMLImageElement): string {
-  const url = new URL(img.src);
+function transformUrl(element: HTMLImageElement): Media {
+  const src = element.src;
+  if (src.endsWith(".mp4")) {
+    return {
+      image: false,
+      src,
+    };
+  }
+  const url = new URL(src);
   url.searchParams.delete("name");
   url.searchParams.set("format", "png");
-  return url.toString();
+  return {
+    image: true,
+    src: url.toString(),
+  };
 }
 
 function isLoggedIn(): boolean {
@@ -48,12 +64,12 @@ function isLoggedIn(): boolean {
   );
 }
 
-function findImages(query: string): string[] {
-  const images: HTMLImageElement[] = Array.from(
+function findMedia(query: string): Media[] {
+  const media: HTMLImageElement[] = Array.from(
     document.querySelectorAll(query),
   );
-  const imageData = images.map(transformUrl);
-  return imageData;
+  const mediaData = media.map(transformUrl);
+  return mediaData;
 }
 
 function findPoster(query: string): string {
@@ -79,9 +95,9 @@ function parseUrlId(): string {
     .findLast((slug) => slug.length > 0)!;
 }
 
-function search(queries: DomQueries): [string[], string, string] {
+function search(queries: DomQueries): [Media[], string, string] {
   return [
-    findImages(queries.images),
+    findMedia(queries.media),
     findPoster(queries.poster),
     findTimestamp(queries.timestamp),
   ];
@@ -97,10 +113,10 @@ function listen(
   if ((message as Message).action !== "getImages") {
     return;
   }
-  const [images, poster, timestamp] = search(isLoggedIn() ? logged : notLogged);
+  const [media, poster, timestamp] = search(isLoggedIn() ? logged : notLogged);
 
   sendResponse({
-    images,
+    media,
     poster,
     timestamp,
     id: parseUrlId(),
