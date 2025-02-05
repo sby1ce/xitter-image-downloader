@@ -13,12 +13,11 @@ function constructFilename(
   return `${poster}_${id}_${date}_${index + 1}.png`;
 }
 
-async function download(event: SubmitEvent): Promise<void> {
+async function download(event: SubmitEvent, data: ExtResponse): Promise<void> {
   event.preventDefault();
   const form = event.target as HTMLFormElement;
   const body = new FormData(form);
   const index: number = Number.parseInt(body.get("selected") as string);
-  const data: ExtResponse = JSON.parse(body.get("data") as string);
   const url: string = data.images[index];
   const filename: string = constructFilename(
     data.poster,
@@ -34,6 +33,10 @@ async function download(event: SubmitEvent): Promise<void> {
   if (downloadId === undefined) {
     console.error(browser.runtime.lastError);
   }
+}
+
+function handleSubmit(data: ExtResponse): (event: SubmitEvent) => void {
+  return (event: SubmitEvent) => download(event, data).then(() => {}, console.error);
 }
 
 function createOption(idx: number): HTMLOptionElement {
@@ -92,11 +95,8 @@ async function main(): Promise<void> {
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
   select.append(...response.images.keys().map(createOption));
-  // biome-ignore lint/style/noNonNullAssertion: trust me bro
-  const data: HTMLInputElement = document.querySelector('input[name="data"]')!;
-  data.value = JSON.stringify(response);
-
-  form.addEventListener("submit", download);
+  
+  form.addEventListener("submit", handleSubmit(response));
 }
 
 window.addEventListener("DOMContentLoaded", () =>
