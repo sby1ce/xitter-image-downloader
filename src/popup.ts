@@ -10,6 +10,13 @@ function createOption(idx: number): HTMLOptionElement {
   return element;
 }
 
+function createAllOption(): HTMLOptionElement {
+  const element = document.createElement("option");
+  element.value = Number.NaN.toString();
+  element.textContent = "All";
+  return element;
+}
+
 async function search<T>(id: number): Promise<T | null> {
   try {
     return await browser.tabs.sendMessage(id, {
@@ -56,7 +63,7 @@ async function main(): Promise<void> {
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
-  select.append(...response.media.keys().map(createOption));
+  select.append(...response.media.keys().map(createOption), createAllOption());
 
   form.addEventListener("submit", submit);
 }

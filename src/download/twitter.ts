@@ -5,32 +5,30 @@ import type { Media, TwitterResponse } from "../content/twitter.ts";
 function constructFilename(
   poster: string,
   id: string,
-  timestamp: string,
+  date: string,
   index: number,
   isImage: boolean,
 ): string {
   // Timestamp is in ISO format UTC+0 and we take only the date part
-  const date = timestamp.split("T")[0];
   const ext = isImage ? "png" : "mp4";
   return `${poster}_${id}_${date}_${index + 1}.${ext}`;
 }
 
-async function download(
-  event: SubmitEvent,
-  data: TwitterResponse,
+async function downloadMedia(
+  poster: string,
+  id: string,
+  date: string,
+  media: Media,
+  index: number,
 ): Promise<void> {
-  event.preventDefault();
-  const form = event.target as HTMLFormElement;
-  const body = new FormData(form);
-  const index: number = Number.parseInt(body.get("selected") as string);
-  const media: Media = data.media[index];
   const filename: string = constructFilename(
-    data.poster,
-    data.id,
-    data.timestamp,
+    poster,
+    id,
+    date,
     index,
     media.image,
   );
+
   const downloadId: number | undefined = await browser.downloads.download({
     url: media.src,
     filename,
@@ -39,6 +37,33 @@ async function download(
   if (downloadId === undefined) {
     console.error(browser.runtime.lastError);
   }
+}
+
+async function download(
+  event: SubmitEvent,
+  data: TwitterResponse,
+): Promise<void> {
+  event.preventDefault();
+
+  const date: string = data.timestamp.split("T")[0];
+  const poster: string = data.poster;
+  const id: string = data.id;
+
+  const form = event.target as HTMLFormElement;
+  const body = new FormData(form);
+  const index: number = Number.parseInt(body.get("selected") as string);
+
+  if (Number.isNaN(index)) {
+    // All option selected
+    for (let index = 0; index < data.media.length; index++) {
+      const media: Media = data.media[index];
+      await downloadMedia(poster, id, date, media, index);
+    }
+    return;
+  }
+
+  const media: Media = data.media[index];
+  await downloadMedia(poster, id, date, media, index);
 }
 
 export function handleSubmit(
