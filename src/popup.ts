@@ -2,17 +2,30 @@ import browser from "webextension-polyfill";
 
 import type { ExtResponse, Message } from "./content.ts";
 
-function constructFilename(poster: string): string {
-  return `${poster}_.png`;
+function constructFilename(
+  poster: string,
+  id: string,
+  timestamp: string,
+  index: number,
+): string {
+  // Timestamp is in ISO format UTC+0 and we take only the date part
+  const date = timestamp.split("T")[0];
+  return `${poster}_${id}_${date}_${index}.png`;
 }
 
 async function download(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.target as HTMLFormElement;
-  const data = new FormData(form);
-  const url = data.get("selected") as string;
-  const poster = data.get("poster") as string;
-  const filename = constructFilename(poster);
+  const body = new FormData(form);
+  const index: number = Number.parseInt(body.get("selected") as string);
+  const data: ExtResponse = JSON.parse(body.get("data") as string);
+  const url: string = data.images[index];
+  const filename: string = constructFilename(
+    data.poster,
+    "",
+    data.timestamp,
+    index,
+  );
   const downloadId: number | undefined = await browser.downloads.download({
     url,
     filename,
@@ -23,10 +36,11 @@ async function download(event: SubmitEvent): Promise<void> {
   }
 }
 
-function createOption(value: string, idx: number): HTMLOptionElement {
+function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
+  const value = (idx + 1).toString();
   element.value = value;
-  element.textContent = (idx + 1).toString();
+  element.textContent = value;
   return element;
 }
 
@@ -46,12 +60,10 @@ async function main(): Promise<void> {
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
-  select.append(...options.map(createOption));
+  select.append(...options.keys().map(createOption));
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
-  const poster: HTMLInputElement = document.querySelector(
-    'input[name="poster"]',
-  )!;
-  poster.value = response.poster;
+  const data: HTMLInputElement = document.querySelector('input[name="data"]')!;
+  data.value = JSON.stringify(response);
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const form = document.querySelector("form")!;
   form.addEventListener("submit", download);
