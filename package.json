@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "dev": "vite",
-    "build": "vite build",
+    "build": "bun run build.ts",
     "check": "biome check --write ."
   },
   "devDependencies": {
