@@ -8,6 +8,7 @@ export interface ExtResponse {
   images: string[];
   poster: string;
   timestamp: string;
+  id: string;
 }
 
 interface DomQueries {
@@ -71,6 +72,13 @@ function findTimestamp(query: string): string {
   return time.dateTime;
 }
 
+function parseUrlId(): string {
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  return window.location.pathname
+    .split("/")
+    .findLast((slug) => slug.length > 0)!;
+}
+
 function listen(
   message: unknown,
   _sender: browser.Runtime.MessageSender,
@@ -97,6 +105,7 @@ function listen(
     images,
     poster,
     timestamp,
+    id: parseUrlId(),
   } satisfies ExtResponse);
 }
 

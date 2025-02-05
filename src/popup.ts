@@ -10,7 +10,7 @@ function constructFilename(
 ): string {
   // Timestamp is in ISO format UTC+0 and we take only the date part
   const date = timestamp.split("T")[0];
-  return `${poster}_${id}_${date}_${index}.png`;
+  return `${poster}_${id}_${date}_${index + 1}.png`;
 }
 
 async function download(event: SubmitEvent): Promise<void> {
@@ -22,7 +22,7 @@ async function download(event: SubmitEvent): Promise<void> {
   const url: string = data.images[index];
   const filename: string = constructFilename(
     data.poster,
-    "",
+    data.id,
     data.timestamp,
     index,
   );
@@ -38,9 +38,8 @@ async function download(event: SubmitEvent): Promise<void> {
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
-  const value = (idx + 1).toString();
-  element.value = value;
-  element.textContent = value;
+  element.value = idx.toString();
+  element.textContent = (idx + 1).toString();
   return element;
 }
 
