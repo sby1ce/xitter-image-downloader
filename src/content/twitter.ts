@@ -1,8 +1,6 @@
 import browser from "webextension-polyfill";
 
-export interface Message {
-  action: string;
-}
+import { Message } from "./common.ts";
 
 export interface Media {
   image: boolean;
@@ -109,7 +107,6 @@ function listen(
   // biome-ignore lint/suspicious/noExplicitAny: such are the types
   sendResponse: any,
 ): undefined {
-  console.log(message);
   if ((message as Message).action !== "getImages") {
     return;
   }

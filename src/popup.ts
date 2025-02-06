@@ -1,7 +1,8 @@
 import browser from "webextension-polyfill";
 
-import type { Message, TwitterResponse } from "./content/twitter.ts";
-import { checkTwitter, handleSubmit } from "./download/twitter.ts";
+import type { TwitterResponse } from "./content/twitter.ts";
+import { checkTwitter, handleTwitter } from "./download/twitter.ts";
+import { Message } from "./content/common.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -48,7 +49,7 @@ async function main(): Promise<void> {
       if (checkTwitter(response)) {
         return;
       }
-      submit = handleSubmit(response);
+      submit = handleTwitter(response);
       break;
     default:
       return;

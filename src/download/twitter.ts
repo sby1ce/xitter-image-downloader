@@ -66,7 +66,7 @@ async function download(
   await downloadMedia(poster, id, date, media, index);
 }
 
-export function handleSubmit(
+export function handleTwitter(
   data: TwitterResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
