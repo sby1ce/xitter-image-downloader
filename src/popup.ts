@@ -22,9 +22,10 @@ function createAllOption(): HTMLOptionElement {
 
 async function search<T>(id: number): Promise<T | null> {
   try {
-    return await browser.tabs.sendMessage(id, {
+    const resp: T = await browser.tabs.sendMessage(id, {
       action: "getImages",
     } as Message);
+    return resp;
   } catch (e) {
     console.warn(e);
     return null;

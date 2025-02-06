@@ -19,6 +19,10 @@
     {
       "matches": ["*://x.com/*"],
       "js": ["src/content/twitter.ts"]
+    },
+    {
+      "matches": ["*://discord.com/*"],
+      "js": ["src/content/discord.ts"]
     }
   ]
 }

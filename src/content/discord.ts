@@ -27,8 +27,9 @@ const queries: DomQueries = {
   timestamp: "li:first-of-type h3 > span > time",
 };
 
-function transformUrl(element: HTMLImageElement): Media {
-  const src = element.src;
+function transformUrl(element: HTMLAnchorElement): Media {
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const src = element.dataset.safeSrc!;
   const url = new URL(src);
   const host = url.host.replace("media", "cdn").replace("net", "com");
   url.host = host;
@@ -40,7 +41,7 @@ function transformUrl(element: HTMLImageElement): Media {
 }
 
 function findMedia(query: string): Media[] {
-  const media: HTMLImageElement[] = Array.from(
+  const media: HTMLAnchorElement[] = Array.from(
     document.querySelectorAll(query),
   );
   const mediaData = media.map(transformUrl);
