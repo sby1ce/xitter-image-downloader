@@ -83,16 +83,15 @@ function findDate(query: string): string {
   if (!time || !time.dateTime) {
     throw new Error("couldn't find time");
   }
-  return time.dateTime;
+  // Timestamp is in ISO format UTC+0 and we take only the date part
+  return time.dateTime.split('T')[0];
 }
 
 function parseUrlId(): string {
-  // Timestamp is in ISO format UTC+0 and we take only the date part
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   return window.location.pathname
     .split("/")
-    .findLast((slug) => slug.length > 0)!
-    .split("T")[0];
+    .findLast((slug) => slug.length > 0)!;
 }
 
 function search(queries: DomQueries): [Media[], string, string] {
