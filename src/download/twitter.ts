@@ -45,7 +45,7 @@ async function download(
 ): Promise<void> {
   event.preventDefault();
 
-  const date: string = data.timestamp.split("T")[0];
+  const date: string = data.date;
   const poster: string = data.poster;
   const id: string = data.id;
 

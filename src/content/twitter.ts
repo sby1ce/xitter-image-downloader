@@ -10,7 +10,7 @@ export interface Media {
 export interface TwitterResponse {
   media: Media[];
   poster: string;
-  timestamp: string;
+  date: string;
   id: string;
 }
 
@@ -78,7 +78,7 @@ function findPoster(query: string): string {
   return name.textContent;
 }
 
-function findTimestamp(query: string): string {
+function findDate(query: string): string {
   const time: HTMLTimeElement | null = document.querySelector(query);
   if (!time || !time.dateTime) {
     throw new Error("couldn't find time");
@@ -87,17 +87,19 @@ function findTimestamp(query: string): string {
 }
 
 function parseUrlId(): string {
+  // Timestamp is in ISO format UTC+0 and we take only the date part
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   return window.location.pathname
     .split("/")
-    .findLast((slug) => slug.length > 0)!;
+    .findLast((slug) => slug.length > 0)!
+    .split("T")[0];
 }
 
 function search(queries: DomQueries): [Media[], string, string] {
   return [
     findMedia(queries.media),
     findPoster(queries.poster),
-    findTimestamp(queries.timestamp),
+    findDate(queries.timestamp),
   ];
 }
 
@@ -110,12 +112,12 @@ function listen(
   if ((message as Message).action !== "getImages") {
     return;
   }
-  const [media, poster, timestamp] = search(isLoggedIn() ? logged : notLogged);
+  const [media, poster, date] = search(isLoggedIn() ? logged : notLogged);
 
   sendResponse({
     media,
     poster,
-    timestamp,
+    date,
     id: parseUrlId(),
   } satisfies TwitterResponse);
 }
