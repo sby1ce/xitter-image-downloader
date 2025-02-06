@@ -70,7 +70,9 @@ export function handleTwitter(
   data: TwitterResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
-    download(event, data).then(() => {}, console.error).catch(console.error);
+    download(event, data)
+      .then(() => {}, console.error)
+      .catch(console.error);
 }
 
 export function checkTwitter(

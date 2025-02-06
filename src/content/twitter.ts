@@ -84,7 +84,7 @@ function findDate(query: string): string {
     throw new Error("couldn't find time");
   }
   // Timestamp is in ISO format UTC+0 and we take only the date part
-  return time.dateTime.split('T')[0];
+  return time.dateTime.split("T")[0];
 }
 
 function parseUrlId(): string {

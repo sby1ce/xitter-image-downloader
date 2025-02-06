@@ -77,7 +77,9 @@ export function handleDiscord(
   data: DiscordResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
-    download(event, data).then(() => {}, console.error).catch(console.error);
+    download(event, data)
+      .then(() => {}, console.error)
+      .catch(console.error);
 }
 
 export function checkDiscord(
