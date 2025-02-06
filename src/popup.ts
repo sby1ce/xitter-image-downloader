@@ -1,8 +1,10 @@
 import browser from "webextension-polyfill";
 
+import type { Message } from "./content/common.ts";
+import type { DiscordResponse } from "./content/discord.ts";
 import type { TwitterResponse } from "./content/twitter.ts";
+import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkTwitter, handleTwitter } from "./download/twitter.ts";
-import { Message } from "./content/common.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -40,17 +42,29 @@ async function main(): Promise<void> {
     return;
   }
 
-  let response: TwitterResponse | null = null;
+  let optionsCount: number | null = null;
   let submit: (event: SubmitEvent) => void;
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const id = tab.id!;
   switch (domain) {
-    case "x":
-      // biome-ignore lint/style/noNonNullAssertion: trust me bro
-      response = await search<TwitterResponse>(tab.id!);
+    case "x": {
+      const response = await search<TwitterResponse>(id);
       if (checkTwitter(response)) {
         return;
       }
+      optionsCount = response.media.length;
       submit = handleTwitter(response);
       break;
+    }
+    case "discord": {
+      const response = await search<DiscordResponse>(id);
+      if (checkDiscord(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handleDiscord(response);
+      break;
+    }
     default:
       return;
   }
@@ -64,7 +78,10 @@ async function main(): Promise<void> {
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const select = document.querySelector("select")!;
-  select.append(...response.media.keys().map(createOption), createAllOption());
+  select.append(
+    ...Array(optionsCount).keys().map(createOption),
+    createAllOption(),
+  );
 
   form.addEventListener("submit", submit);
 }

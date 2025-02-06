@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 
-import { Message } from "./common.ts";
+import type { Message } from "./common.ts";
 
 export interface Media {
   image: boolean;
