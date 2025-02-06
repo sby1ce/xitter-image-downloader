@@ -33,7 +33,9 @@ function transformUrl(element: HTMLAnchorElement): Media {
   const url = new URL(src);
   const host = url.host.replace("media", "cdn").replace("net", "com");
   url.host = host;
-  url.search = "";
+  url.searchParams.delete("format");
+  url.searchParams.delete("width");
+  url.searchParams.delete("height");
   return {
     image: true,
     src: url.toString(),
