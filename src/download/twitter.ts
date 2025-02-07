@@ -1,3 +1,9 @@
+/*
+Copyright 2025 sby1ce
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+*/
+
 import browser from "webextension-polyfill";
 
 import type { Media, TwitterResponse } from "../content/twitter.ts";

@@ -1,3 +1,9 @@
+/*
+Copyright 2025 sby1ce
+
+SPDX-License-Identifier: CC0-1.0
+*/
+
 import { defineConfig } from "vite";
 import webExtension, { readJsonFile } from "vite-plugin-web-extension";
 

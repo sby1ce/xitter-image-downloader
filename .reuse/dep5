@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: public/icon/*
+Copyright: 2025 sby1ce 
+License: CC-BY-4.0
+
+Files: public/fonts/*
+Copyright: 2025 sby1ce 
+License: OFL-1.1
