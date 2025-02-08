@@ -16,7 +16,7 @@ function constructFilename(
 ): string {
   // No `+ 1` here unlike twitter because user never sees the number
   // also discord can have up to 10 unlike twitter 4, so only 1 digit if it's the 10th
-  return `${original}_@${poster}_${date}_${index}.${ext}`;
+  return `${original}-@${poster}-${date}-${index}.${ext}`;
 }
 
 function extractOriginalFilename(src: string): [string, string] {
