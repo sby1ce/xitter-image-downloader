@@ -9,7 +9,6 @@ import browser from "webextension-polyfill";
 import type { Message } from "./common.ts";
 
 export interface Media {
-  image: boolean;
   src: string;
 }
 
@@ -44,7 +43,6 @@ function transformUrl(element: HTMLAnchorElement): Media {
   url.searchParams.delete("width");
   url.searchParams.delete("height");
   return {
-    image: true,
     src: url.toString(),
   };
 }

@@ -9,8 +9,8 @@ import browser from "webextension-polyfill";
 import type { Message } from "./common.ts";
 
 export interface Media {
-  image: boolean;
   src: string;
+  ext: string;
 }
 
 export interface TwitterResponse {
@@ -46,16 +46,23 @@ function transformUrl(element: HTMLImageElement): Media {
   const src = element.src;
   if (src.endsWith(".mp4")) {
     return {
-      image: false,
       src,
+      ext: "mp4",
     };
   }
   const url = new URL(src);
-  url.searchParams.set("name", "orig");
-  url.searchParams.set("format", "jpg");
+  let ext: string;
+  if (url.searchParams.get("format") === "png") {
+    url.searchParams.set("name", "large");
+    ext = "png";
+  } else {
+    url.searchParams.set("name", "orig");
+    url.searchParams.set("format", "jpg");
+    ext = "jpg";
+  }
   return {
-    image: true,
     src: url.toString(),
+    ext: "jpg",
   };
 }
 
