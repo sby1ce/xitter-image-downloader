@@ -17,7 +17,7 @@ function constructFilename(
 ): string {
   // Timestamp is in ISO format UTC+0 and we take only the date part
   const ext = isImage ? "png" : "mp4";
-  return `${poster}_${id}_${date}_${index + 1}.${ext}`;
+  return `${poster}-${id}-${date}-${index + 1}.${ext}`;
 }
 
 async function downloadMedia(

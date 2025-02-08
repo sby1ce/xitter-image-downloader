@@ -51,8 +51,8 @@ function transformUrl(element: HTMLImageElement): Media {
     };
   }
   const url = new URL(src);
-  url.searchParams.delete("name");
-  url.searchParams.set("format", "png");
+  url.searchParams.set("name", "orig");
+  url.searchParams.set("format", "jpg");
   return {
     image: true,
     src: url.toString(),
