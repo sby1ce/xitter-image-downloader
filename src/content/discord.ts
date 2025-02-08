@@ -27,10 +27,10 @@ interface DomQueries {
 // section + div filters posts that aren't visible anymore but are still in HTML
 // li is searching for the first message to only select the original post
 const queries: DomQueries = {
-  media: "div + li:first-of-type a[data-safe-src]",
+  media: "li:first-of-type a[data-safe-src]:has(+ div)",
   // vencord-only, only select the username which comes first
-  poster: "div + li:first-of-type h3 > span > span:first-child",
-  timestamp: "div + li:first-of-type h3 > span > time",
+  poster: "li:first-of-type h3 > span > span:first-child",
+  timestamp: "li:first-of-type h3 > span > time",
 };
 
 function transformUrl(element: HTMLAnchorElement): Media {
