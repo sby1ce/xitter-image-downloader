@@ -23,6 +23,10 @@
     {
       "matches": ["*://discord.com/*"],
       "js": ["src/content/discord.ts"]
+    },
+    {
+      "matches": ["*://www.pixiv.net/*"],
+      "js": ["src/content/pixiv.ts"]
     }
   ]
 }

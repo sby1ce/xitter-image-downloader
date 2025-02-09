@@ -9,8 +9,10 @@ import browser from "webextension-polyfill";
 import type { Message } from "./content/common.ts";
 import type { DiscordResponse } from "./content/discord.ts";
 import type { TwitterResponse } from "./content/twitter.ts";
+import type { PixivResponse } from "./content/pixiv.ts";
 import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkTwitter, handleTwitter } from "./download/twitter.ts";
+import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -42,19 +44,14 @@ async function main(): Promise<void> {
   const tab: browser.Tabs.Tab = (
     await browser.tabs.query({ active: true, currentWindow: true })
   )[0];
-  const host = new URL(tab.url ?? "").host.split(".");
-  const tld = host.at(-1);
-  const domain = host.at(-2);
-  if (tld !== "com" || !domain) {
-    return;
-  }
+  const host = new URL(tab.url ?? "").host;
 
   let optionsCount: number | null = null;
   let submit: (event: SubmitEvent) => void;
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const id = tab.id!;
-  switch (domain) {
-    case "x": {
+  switch (host) {
+    case "x.com": {
       const response = await search<TwitterResponse>(id);
       if (checkTwitter(response)) {
         return;
@@ -63,13 +60,22 @@ async function main(): Promise<void> {
       submit = handleTwitter(response);
       break;
     }
-    case "discord": {
+    case "discord.com": {
       const response = await search<DiscordResponse>(id);
       if (checkDiscord(response)) {
         return;
       }
       optionsCount = response.media.length;
       submit = handleDiscord(response);
+      break;
+    }
+    case "www.pixiv.net": {
+      const response = await search<PixivResponse>(id);
+      if (checkPixiv(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handlePixiv(response);
       break;
     }
     default:
