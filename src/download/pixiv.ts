@@ -6,7 +6,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 import browser from "webextension-polyfill";
 
-import type { PixivResponse, Media } from "../content/pixiv.ts";
+import type { BackgroundMessage, BackgroundResponse } from "../background.ts";
+import type { Media, PixivResponse } from "../content/pixiv.ts";
 
 function constructFilename(
   original: string,
@@ -41,20 +42,18 @@ async function downloadMedia(
   // pixiv restricts access with a `Referer` header
   // even though Firefox 70+ allows it in download API, Chrome doesn't, so have to make this crutch
   // of downloading with fetch into blob and then downloading the blob
-  const blob: Blob = await fetch(media.src, {
-    method: "GET",
-    referrer: "https://www.pixiv.net/",
-  }).then(resp => resp.blob());
-  const url = URL.createObjectURL(blob);
+  // because of CORS, doing it in background script with host_permissions on manifest v3
+  const response: BackgroundResponse = await browser.runtime.sendMessage({
+    action: "fetch",
+    url: media.src,
+  } satisfies BackgroundMessage);
 
   const downloadId: number | undefined = await browser.downloads.download({
-    url,
+    url: response.data,
     filename,
     saveAs: true,
   });
 
-  URL.revokeObjectURL(url);
-  
   if (downloadId === undefined) {
     console.error(browser.runtime.lastError);
   }
@@ -85,17 +84,13 @@ async function download(
   await downloadMedia(poster, date, media);
 }
 
-export function handlePixiv(
-  data: PixivResponse,
-): (event: SubmitEvent) => void {
+export function handlePixiv(data: PixivResponse): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
     download(event, data)
       .then(() => {}, console.error)
       .catch(console.error);
 }
 
-export function checkPixiv(
-  response: PixivResponse | null,
-): response is null {
+export function checkPixiv(response: PixivResponse | null): response is null {
   return !response || response.media.length < 1;
 }
