@@ -53,7 +53,7 @@ function transformUrl(element: HTMLImageElement): Media {
   const url = new URL(src);
   let ext: string;
   if (url.searchParams.get("format") === "png") {
-    url.searchParams.set("name", "large");
+    url.searchParams.set("name", "4096x4096");
     ext = "png";
   } else {
     url.searchParams.set("name", "orig");
