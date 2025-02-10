@@ -3,6 +3,7 @@ import browser, { type DeclarativeNetRequest } from "webextension-polyfill";
 export interface BackgroundMessage {
   action: "fetch";
   url: string;
+  filename: string;
 }
 
 export interface BackgroundResponse {
@@ -13,14 +14,12 @@ async function listen(
   request: unknown,
   _sender: browser.Runtime.MessageSender,
   // biome-ignore lint/suspicious/noExplicitAny: such are the types
-  sendResponse: any,
+  _sendResponse: any,
 ): Promise<void> {
   const message = request as BackgroundMessage;
   if (message.action !== "fetch") {
     return;
   }
-
-  console.log(message);
 
   const response: Response = await fetch(message.url, {
     referrer: "https://www.pixiv.net/",
@@ -39,9 +38,15 @@ async function listen(
     reader.readAsDataURL(blob);
   });
 
-  console.log(base64);
+  const downloadId = await browser.downloads.download({
+    url: base64,
+    filename: message.filename,
+    saveAs: true,
+  });
 
-  sendResponse({ data: base64 } satisfies BackgroundResponse);
+  if (downloadId === undefined) {
+    console.error(browser.runtime.lastError);
+  }
 }
 
 browser.runtime.onMessage.addListener(listen);

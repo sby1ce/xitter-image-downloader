@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 import browser from "webextension-polyfill";
 
-import type { BackgroundMessage, BackgroundResponse } from "../background.ts";
+import type { BackgroundMessage } from "../background.ts";
 import type { Media, PixivResponse } from "../content/pixiv.ts";
 
 function constructFilename(
@@ -43,20 +43,14 @@ async function downloadMedia(
   // even though Firefox 70+ allows it in download API, Chrome doesn't, so have to make this crutch
   // of downloading with fetch into blob and then downloading the blob
   // because of CORS, doing it in background script with host_permissions on manifest v3
-  const response: BackgroundResponse = await browser.runtime.sendMessage({
-    action: "fetch",
-    url: media.src,
-  } satisfies BackgroundMessage);
-
-  const downloadId: number | undefined = await browser.downloads.download({
-    url: response.data,
-    filename,
-    saveAs: true,
-  });
-
-  if (downloadId === undefined) {
-    console.error(browser.runtime.lastError);
-  }
+  
+  await browser.runtime.sendMessage(
+    {
+      action: "fetch",
+      url: media.src,
+      filename,
+    } satisfies BackgroundMessage,
+  );
 }
 
 async function download(
