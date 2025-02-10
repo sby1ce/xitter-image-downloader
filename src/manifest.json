@@ -19,7 +19,13 @@
     "{{firefox}}.scripts": ["src/background.ts"]
   },
   "{{chrome}}.host_permissions": ["*://*.pximg.net/*"],
-  "permissions": ["activeTab", "tabs", "scripting", "downloads", "declarativeNetRequestWithHostAccess"],
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting",
+    "downloads",
+    "declarativeNetRequestWithHostAccess"
+  ],
   "content_scripts": [
     {
       "matches": ["*://x.com/*"],

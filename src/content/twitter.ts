@@ -62,7 +62,7 @@ function transformUrl(element: HTMLImageElement): Media {
   }
   return {
     src: url.toString(),
-    ext: "jpg",
+    ext,
   };
 }
 
