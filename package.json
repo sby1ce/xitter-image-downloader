@@ -7,6 +7,7 @@
     "compile": "tsc --noEmit",
     "dev": "vite",
     "build": "bun run build.ts",
+    "build:firefox": "node --experimental-strip-types build.ts firefox",
     "check": "biome check --write ."
   },
   "devDependencies": {
