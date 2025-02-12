@@ -6,13 +6,23 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Image Downloader
 
-Download an image from Twitter and Discord in one click with a useful filename. 
+Download an image from Twitter, Discord and Pixiv in one click with a useful filename. 
 
 ## How to build
+
+### For Chrome
 
 ```bash
 bun install
 bun run build
+```
+
+### For Firefox
+
+```bash
+# you can use bun too but mozilla store uses npm by default
+npm install
+npm run build:firefox
 ```
 
 ## Notice
