@@ -27,17 +27,18 @@ interface DomQueries {
 }
 
 // Selects the main post using the reply section as the indicator
-// alt="Image" excludes profile pictures
+// :not([alt=""]) excludes profile pictures (it turns out people can set alt text on images??)
 // also capture GIFs (actually mp4)
 const logged: DomQueries = {
   media:
-    'article:has(+ div[data-testid="inline_reply_offscreen"]) img[alt="Image"][draggable="true"], article:has(+ div[data-testid="inline_reply_offscreen"]) video',
+    'article:has(+ div[data-testid="inline_reply_offscreen"]) img[draggable="true"]:not([alt=""]), \
+    article:has(+ div[data-testid="inline_reply_offscreen"]) video',
   poster:
     'article:has(+ div[data-testid="inline_reply_offscreen"]) a > div > span',
   timestamp: 'article:has(+ div[data-testid="inline_reply_offscreen"]) time',
 };
 const notLogged: DomQueries = {
-  media: 'img[alt="Image"][draggable="true"], article video',
+  media: 'img[draggable="true"]:not([alt=""]), article video',
   poster: "article a > div > span",
   timestamp: "article time",
 };

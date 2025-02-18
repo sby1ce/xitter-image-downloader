@@ -43,14 +43,12 @@ async function downloadMedia(
   // even though Firefox 70+ allows it in download API, Chrome doesn't, so have to make this crutch
   // of downloading with fetch into blob and then downloading the blob
   // because of CORS, doing it in background script with host_permissions on manifest v3
-  
-  await browser.runtime.sendMessage(
-    {
-      action: "fetch",
-      url: media.src,
-      filename,
-    } satisfies BackgroundMessage,
-  );
+
+  await browser.runtime.sendMessage({
+    action: "fetch",
+    url: media.src,
+    filename,
+  } satisfies BackgroundMessage);
 }
 
 async function download(
