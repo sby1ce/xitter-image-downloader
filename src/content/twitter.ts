@@ -38,7 +38,7 @@ const logged: DomQueries = {
   timestamp: 'article:has(+ div[data-testid="inline_reply_offscreen"]) time',
 };
 const notLogged: DomQueries = {
-  media: 'img[draggable="true"]:not([alt=""]), article video',
+  media: 'article img[draggable="true"]:not([alt=""]), article video',
   poster: "article a > div > span",
   timestamp: "article time",
 };
