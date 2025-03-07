@@ -48,9 +48,10 @@ function transformUrl(element: HTMLAnchorElement): Media {
 }
 
 function findMedia(query: string): Media[] {
-  const media: HTMLAnchorElement[] = Array.from(
-    document.querySelectorAll(query),
-  );
+  // filtering the posts that aren't in the focus
+  const media = Array.from(document.querySelectorAll(query)).filter(
+    (element) => element.closest("[data-has-border]") !== null,
+  ) as HTMLAnchorElement[];
   const mediaData = media.map(transformUrl);
   return mediaData;
 }
