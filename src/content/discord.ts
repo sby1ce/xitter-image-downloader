@@ -24,10 +24,17 @@ interface DomQueries {
   timestamp: string;
 }
 
-// section + div filters posts that aren't visible anymore but are still in HTML
-// li is searching for the first message to only select the original post
+/**
+ * `[data-has-border] ~ div` selects when the thread is opened to the side
+ *
+ * `main` selects when the thread is opened fully
+ *
+ * `li` is searching for the first message to only select the original post
+ */
 const queries: DomQueries = {
-  media: "li:first-of-type a[data-safe-src]:has(+ div)",
+  media:
+    "[data-has-border] ~ div li:first-of-type a[data-safe-src]:has(+ div), \
+    main li:first-of-type a[data-safe-src]:has(+ div)",
   // vencord-only, only select the username which comes first
   poster: "li:first-of-type h3 > span > span:first-child",
   timestamp: "li:first-of-type h3 > span > time",
@@ -49,9 +56,9 @@ function transformUrl(element: HTMLAnchorElement): Media {
 
 function findMedia(query: string): Media[] {
   // filtering the posts that aren't in the focus
-  const media = Array.from(document.querySelectorAll(query)).filter(
-    (element) => element.closest("[data-has-border]") === null,
-  ) as HTMLAnchorElement[];
+  const media: HTMLAnchorElement[] = Array.from(
+    document.querySelectorAll(query),
+  );
   const mediaData = media.map(transformUrl);
   return mediaData;
 }
@@ -89,7 +96,7 @@ function listen(
   _sender: browser.Runtime.MessageSender,
   // biome-ignore lint/suspicious/noExplicitAny: such are the types
   sendResponse: any,
-): undefined {
+): void {
   if ((message as Message).action !== "getImages") {
     return;
   }
@@ -102,4 +109,5 @@ function listen(
   } satisfies DiscordResponse);
 }
 
+// @ts-expect-error you only need to return `true` from listener that sends response when the response is sent asynchronously
 browser.runtime.onMessage.addListener(listen);

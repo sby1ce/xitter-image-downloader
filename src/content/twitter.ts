@@ -135,4 +135,5 @@ function listen(
   } satisfies TwitterResponse);
 }
 
+// @ts-expect-error you only need to return `true` from listener that sends response when the response is sent asynchronously
 browser.runtime.onMessage.addListener(listen);
