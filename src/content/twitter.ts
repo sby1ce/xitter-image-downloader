@@ -80,7 +80,11 @@ function findMedia(query: string): Media[] {
   const media: HTMLImageElement[] = Array.from(
     document.querySelectorAll(query),
   );
-  const mediaData = media.map(transformUrl);
+  // actual videos (not GIFs) being selected crashes extension by having a <source> instead of src prop
+  // so this filter is a crutch
+  const mediaData = media
+    .map(transformUrl)
+    .filter((media) => media.src.length > 0);
   return mediaData;
 }
 
