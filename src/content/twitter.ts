@@ -43,8 +43,12 @@ const notLogged: DomQueries = {
   timestamp: "article time",
 };
 
-function transformUrl(element: HTMLImageElement): Media {
-  const src = element.src;
+function getUrl(element: HTMLImageElement | HTMLVideoElement): string | null {
+  const src = element.src.trim();
+  return src.length <= 0 ? null : src;
+}
+
+function transformUrl(src: string): Media {
   if (src.endsWith(".mp4")) {
     return {
       src,
@@ -77,14 +81,15 @@ function isLoggedIn(): boolean {
 }
 
 function findMedia(query: string): Media[] {
-  const media: HTMLImageElement[] = Array.from(
+  const media: (HTMLImageElement | HTMLVideoElement)[] = Array.from(
     document.querySelectorAll(query),
   );
   // actual videos (not GIFs) being selected crashes extension by having a <source> instead of src prop
   // so this filter is a crutch
   const mediaData = media
-    .map(transformUrl)
-    .filter((media) => media.src.length > 0);
+    .map(getUrl)
+    .filter((src): src is string => src !== null)
+    .map(transformUrl);
   return mediaData;
 }
 
