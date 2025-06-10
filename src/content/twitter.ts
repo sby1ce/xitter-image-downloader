@@ -35,12 +35,12 @@ const logged: DomQueries = {
     article:has(+ div[data-testid="inline_reply_offscreen"]) video',
   poster:
     'article:has(+ div[data-testid="inline_reply_offscreen"]) a > div > span',
-  timestamp: 'article:has(+ div[data-testid="inline_reply_offscreen"]) time',
+  timestamp: 'article:has(+ div[data-testid="inline_reply_offscreen"]) a > time',
 };
 const notLogged: DomQueries = {
   media: 'article img[draggable="true"]:not([alt=""]), article video',
   poster: "article a > div > span",
-  timestamp: "article time",
+  timestamp: "article a > time",
 };
 
 function getUrl(element: HTMLImageElement | HTMLVideoElement): string | null {

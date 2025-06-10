@@ -1,7 +1,7 @@
 {
   "name": "xitter-image-downloader",
   "private": true,
-  "version": "0.4.5",
+  "version": "0.4.6",
   "type": "module",
   "scripts": {
     "compile": "tsc --noEmit",
@@ -18,7 +18,7 @@
     "lightningcss": "^1.29.2",
     "sass": "^1.85.1",
     "typescript": "^5.8.2",
-    "vite": "^6.2.1",
+    "vite": "npm:rolldown-vite@latest",
     "vite-plugin-web-extension": "^4.4.3",
     "webextension-polyfill": "^0.12.0"
   }
