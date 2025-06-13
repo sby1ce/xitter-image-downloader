@@ -38,6 +38,10 @@
     {
       "matches": ["*://www.pixiv.net/*"],
       "js": ["src/content/pixiv.ts"]
+    },
+    {
+      "matches": ["*://www.reddit.com/*"],
+      "js": ["src/content/reddit.ts"]
     }
   ]
 }

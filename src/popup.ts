@@ -10,9 +10,11 @@ import type { Message } from "./content/common.ts";
 import type { DiscordResponse } from "./content/discord.ts";
 import type { PixivResponse } from "./content/pixiv.ts";
 import type { TwitterResponse } from "./content/twitter.ts";
+import type { RedditResponse } from "./content/reddit.ts";
 import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
 import { checkTwitter, handleTwitter } from "./download/twitter.ts";
+import { checkReddit, handleReddit } from "./download/reddit.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -76,6 +78,15 @@ async function main(): Promise<void> {
       }
       optionsCount = response.media.length;
       submit = handlePixiv(response);
+      break;
+    }
+    case "www.reddit.com": {
+      const response = await search<RedditResponse>(id);
+      if (checkReddit(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handleReddit(response);
       break;
     }
     default:
