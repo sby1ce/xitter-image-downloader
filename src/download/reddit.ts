@@ -84,8 +84,6 @@ export function handleReddit(
       .catch(console.error);
 }
 
-export function checkReddit(
-  response: RedditResponse | null,
-): response is null {
+export function checkReddit(response: RedditResponse | null): response is null {
   return !response || response.media.length < 1;
 }

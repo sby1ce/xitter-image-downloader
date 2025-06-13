@@ -25,7 +25,7 @@ interface DomQueries {
 }
 
 const queries: DomQueries = {
-  media: "zoomable-img img",
+  media: "zoomable-img img, figure > img",
   poster: "faceplate-tracker > a[rpl][aria-haspopup]",
   timestamp: "span > faceplate-timeago > time",
 };
@@ -36,7 +36,12 @@ function getUrl(element: HTMLImageElement): string | null {
 }
 
 function transformUrl(src: string): Media {
-  return { src };
+  if (src.startsWith("https://i.redd.it/")) {
+    return { src };
+  }
+  const path = new URL(src).pathname;
+  const direct = `https://i.redd.it/${path.slice(path.lastIndexOf("-") + 1)}`;
+  return { src: direct };
 }
 
 function findMedia(query: string): Media[] {

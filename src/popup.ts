@@ -9,12 +9,12 @@ import browser from "webextension-polyfill";
 import type { Message } from "./content/common.ts";
 import type { DiscordResponse } from "./content/discord.ts";
 import type { PixivResponse } from "./content/pixiv.ts";
-import type { TwitterResponse } from "./content/twitter.ts";
 import type { RedditResponse } from "./content/reddit.ts";
+import type { TwitterResponse } from "./content/twitter.ts";
 import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
-import { checkTwitter, handleTwitter } from "./download/twitter.ts";
 import { checkReddit, handleReddit } from "./download/reddit.ts";
+import { checkTwitter, handleTwitter } from "./download/twitter.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
