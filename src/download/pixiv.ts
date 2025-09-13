@@ -62,7 +62,7 @@ async function download(
 
   const form = event.target as HTMLFormElement;
   const body = new FormData(form);
-  const index: number = Number.parseInt(body.get("selected") as string);
+  const index: number = Number.parseInt(body.get("selected") as string, 10);
 
   if (Number.isNaN(index)) {
     // All option selected

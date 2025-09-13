@@ -11,10 +11,12 @@ import type { DiscordResponse } from "./content/discord.ts";
 import type { PixivResponse } from "./content/pixiv.ts";
 import type { RedditResponse } from "./content/reddit.ts";
 import type { TwitterResponse } from "./content/twitter.ts";
+import type { XcancelResponse } from "./content/xcancel.ts";
 import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
 import { checkReddit, handleReddit } from "./download/reddit.ts";
 import { checkTwitter, handleTwitter } from "./download/twitter.ts";
+import { checkXcancel, handleXcancel } from "./download/xcancel.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -60,6 +62,15 @@ async function main(): Promise<void> {
       }
       optionsCount = response.media.length;
       submit = handleTwitter(response);
+      break;
+    }
+    case "xcancel.com": {
+      const response = await search<XcancelResponse>(id);
+      if (checkXcancel(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handleXcancel(response);
       break;
     }
     case "discord.com": {

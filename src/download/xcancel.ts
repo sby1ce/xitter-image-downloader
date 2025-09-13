@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 import browser from "webextension-polyfill";
 
-import type { Media, TwitterResponse } from "../content/twitter.ts";
+import type { Media, XcancelResponse } from "../content/xcancel.ts";
 
 function constructFilename(
   poster: string,
@@ -45,7 +45,7 @@ async function downloadMedia(
 
 async function download(
   event: SubmitEvent,
-  data: TwitterResponse,
+  data: XcancelResponse,
 ): Promise<void> {
   event.preventDefault();
 
@@ -70,8 +70,8 @@ async function download(
   await downloadMedia(poster, id, date, media, index);
 }
 
-export function handleTwitter(
-  data: TwitterResponse,
+export function handleXcancel(
+  data: XcancelResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
     download(event, data)
@@ -79,8 +79,8 @@ export function handleTwitter(
       .catch(console.error);
 }
 
-export function checkTwitter(
-  response: TwitterResponse | null,
+export function checkXcancel(
+  response: XcancelResponse | null,
 ): response is null {
   return !response || response.media.length < 1;
 }

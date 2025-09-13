@@ -32,6 +32,10 @@
       "js": ["src/content/twitter.ts"]
     },
     {
+      "matches": ["*://xcancel.com/*"],
+      "js": ["src/content/xcancel.ts"]
+    },
+    {
       "matches": ["*://discord.com/*"],
       "js": ["src/content/discord.ts"]
     },
