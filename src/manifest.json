@@ -47,5 +47,12 @@
       "matches": ["*://www.reddit.com/*"],
       "js": ["src/content/reddit.ts"]
     }
-  ]
+  ],
+  "{{firefox}}.browser_specific_settings": {
+    "gecko": {
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
 }
