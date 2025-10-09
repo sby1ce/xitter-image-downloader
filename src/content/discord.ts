@@ -37,7 +37,7 @@ const queries: DomQueries = {
     main li:first-of-type a[data-safe-src]:has(+ div)",
   // vencord-only, only select the username which comes first
   poster: "li:first-of-type h3 > span > span:first-child",
-  timestamp: "li:first-of-type h3 > span > time",
+  timestamp: "li:first-of-type h3 span time",
 };
 
 function transformUrl(element: HTMLAnchorElement): Media {
