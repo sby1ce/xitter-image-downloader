@@ -65,7 +65,7 @@ function findMedia(query: string): Media[] {
 
 function findPoster(query: string): string {
   const name: HTMLSpanElement | null = document.querySelector(query);
-  if (!name || !name.textContent) {
+  if (!name?.textContent) {
     throw new Error("couldn't find name");
   }
   // `toLowerCase` is handling the case where the shown name is equal to username but has different casing
@@ -76,7 +76,7 @@ function findPoster(query: string): string {
 
 function findDate(query: string): string {
   const time: HTMLTimeElement | null = document.querySelector(query);
-  if (!time || !time.dateTime) {
+  if (!time?.dateTime) {
     throw new Error("couldn't find time");
   }
   // Timestamp is in ISO format UTC+0 and we take only the date part

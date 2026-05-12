@@ -13,8 +13,6 @@ export interface BackgroundResponse {
 async function listen(
   request: unknown,
   _sender: browser.Runtime.MessageSender,
-  // biome-ignore lint/suspicious/noExplicitAny: such are the types
-  _sendResponse: any,
 ): Promise<void> {
   const message = request as BackgroundMessage;
   if (message.action !== "fetch") {
@@ -31,21 +29,22 @@ async function listen(
   }
   const blob: Blob = await response.blob();
 
-  const reader = new FileReader();
-  const base64: string = await new Promise((resolve, reject) => {
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
+  const objectUrl = URL.createObjectURL(blob);
 
-  const downloadId = await browser.downloads.download({
-    url: base64,
-    filename: message.filename,
-    saveAs: true,
-  });
+  try {
+    const downloadId = await browser.downloads.download({
+      url: objectUrl,
+      filename: message.filename,
+      saveAs: true,
+    });
 
-  if (downloadId === undefined) {
-    console.error(browser.runtime.lastError);
+    if (downloadId === undefined) {
+      console.error(browser.runtime.lastError);
+    }
+  } finally {
+    // Surely this is fine and i won't be dealing with files large enough to matter
+    // to switch to download.onChange event listener or something
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
   }
 }
 

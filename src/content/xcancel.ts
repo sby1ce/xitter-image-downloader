@@ -78,7 +78,7 @@ function findMedia(query: string): Media[] {
 
 function findPoster(query: string): string {
   const name: HTMLSpanElement | null = document.querySelector(query);
-  if (!name || !name.textContent) {
+  if (!name?.textContent) {
     throw new Error("couldn't find name");
   }
   return name.textContent;
@@ -86,7 +86,7 @@ function findPoster(query: string): string {
 
 function findDate(query: string): string {
   const time: HTMLParagraphElement | null = document.querySelector(query);
-  if (!time || !time.textContent) {
+  if (!time?.textContent) {
     throw new Error("couldn't find time");
   }
   // Timestamp is Nov 20, 2024 · 11:27 PM UTC
