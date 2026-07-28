@@ -1,17 +1,18 @@
 /*
-Copyright 2025 sby1ce
+Copyright 2026 sby1ce
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
 import browser from "webextension-polyfill";
-
+import { type BskyResponse, fetchBskyPost } from "./content/bsky.ts";
 import type { Message } from "./content/common.ts";
 import type { DiscordResponse } from "./content/discord.ts";
 import type { PixivResponse } from "./content/pixiv.ts";
 import type { RedditResponse } from "./content/reddit.ts";
 import type { TwitterResponse } from "./content/twitter.ts";
 import type { XcancelResponse } from "./content/xcancel.ts";
+import { checkBsky, handleBsky } from "./download/bsky.ts";
 import { checkDiscord, handleDiscord } from "./download/discord.ts";
 import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
 import { checkReddit, handleReddit } from "./download/reddit.ts";
@@ -98,6 +99,16 @@ async function main(): Promise<void> {
       }
       optionsCount = response.media.length;
       submit = handleReddit(response);
+      break;
+    }
+    case "bsky.app": {
+      // biome-ignore lint/style/noNonNullAssertion: trust me bro
+      const response: BskyResponse | null = await fetchBskyPost(tab.url!);
+      if (checkBsky(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handleBsky(response);
       break;
     }
     default:

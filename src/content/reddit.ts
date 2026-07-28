@@ -1,5 +1,5 @@
 /*
-Copyright 2025 sby1ce
+Copyright 2026 sby1ce
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
@@ -80,23 +80,20 @@ function search(queries: DomQueries): [Media[], string, string] {
   ];
 }
 
-function listen(
+async function listen(
   message: unknown,
   _sender: browser.Runtime.MessageSender,
-  // biome-ignore lint/suspicious/noExplicitAny: such are the types
-  sendResponse: any,
-): undefined {
+): Promise<unknown> {
   if ((message as Message).action !== "getImages") {
     return;
   }
   const [media, poster, date] = search(queries);
 
-  sendResponse({
+  return {
     media,
     poster,
     date,
-  } satisfies RedditResponse);
+  } satisfies RedditResponse;
 }
 
-// @ts-expect-error you only need to return `true` from listener that sends response when the response is sent asynchronously
 browser.runtime.onMessage.addListener(listen);

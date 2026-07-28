@@ -14,7 +14,7 @@
     "{{chrome}}.service_worker": "src/background.ts",
     "{{firefox}}.scripts": ["src/background.ts"]
   },
-  "host_permissions": ["*://*.pximg.net/*"],
+  "host_permissions": ["*://*.pximg.net/*", "*://*.bsky.app/*"],
   "permissions": [
     "activeTab",
     "tabs",
