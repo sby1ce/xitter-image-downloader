@@ -4,19 +4,9 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
-
-import type { Message } from "./common.ts";
-
-export interface Media {
-  src: string;
-}
-
-export interface DiscordResponse {
-  media: Media[];
-  poster: string;
-  date: string;
-}
+import { defineContentScript } from "#imports";
+import type { DiscordResponse, Media } from "@/common/discord";
+import { messenger } from "@/messenger";
 
 interface DomQueries {
   media: string;
@@ -70,7 +60,7 @@ function findPoster(query: string): string {
   }
   // `toLowerCase` is handling the case where the shown name is equal to username but has different casing
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
-  const username = name.childNodes[0].textContent!.toLowerCase();
+  const username = name.childNodes[0]!.textContent!.toLowerCase();
   return username;
 }
 
@@ -80,7 +70,8 @@ function findDate(query: string): string {
     throw new Error("couldn't find time");
   }
   // Timestamp is in ISO format UTC+0 and we take only the date part
-  return time.dateTime.split("T")[0];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  return time.dateTime.split("T")[0]!;
 }
 
 function search(queries: DomQueries): [Media[], string, string] {
@@ -91,20 +82,17 @@ function search(queries: DomQueries): [Media[], string, string] {
   ];
 }
 
-async function listen(
-  message: unknown,
-  _sender: browser.Runtime.MessageSender,
-): Promise<unknown> {
-  if ((message as Message).action !== "getImages") {
-    return;
-  }
-  const [media, poster, date] = search(queries);
+export default defineContentScript({
+  matches: ["*://discord.com/*"],
+  async main(): Promise<void> {
+    messenger.onMessage("getImagesDiscord", () => {
+      const [media, poster, date] = search(queries);
 
-  return {
-    media,
-    poster,
-    date,
-  } satisfies DiscordResponse;
-}
-
-browser.runtime.onMessage.addListener(listen);
+      return {
+        media,
+        poster,
+        date,
+      } satisfies DiscordResponse;
+    });
+  },
+});

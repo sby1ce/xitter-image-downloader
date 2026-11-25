@@ -4,20 +4,18 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
-import { type BskyResponse, fetchBskyPost } from "./content/bsky.ts";
-import type { Message } from "./content/common.ts";
-import type { DiscordResponse } from "./content/discord.ts";
-import type { PixivResponse } from "./content/pixiv.ts";
-import type { RedditResponse } from "./content/reddit.ts";
-import type { TwitterResponse } from "./content/twitter.ts";
-import type { XcancelResponse } from "./content/xcancel.ts";
-import { checkBsky, handleBsky } from "./download/bsky.ts";
-import { checkDiscord, handleDiscord } from "./download/discord.ts";
-import { checkPixiv, handlePixiv } from "./download/pixiv.ts";
-import { checkReddit, handleReddit } from "./download/reddit.ts";
-import { checkTwitter, handleTwitter } from "./download/twitter.ts";
-import { checkXcancel, handleXcancel } from "./download/xcancel.ts";
+import { type Browser, browser } from "#imports";
+import type { BskyResponse } from "@/common/bsky.ts";
+import type { DiscordResponse } from "@/common/discord.ts";
+import type { PixivResponse } from "@/common/pixiv.ts";
+import type { RedditResponse } from "@/common/reddit.ts";
+import type { TwitterResponse } from "@/common/twitter.ts";
+import { messenger } from "@/messenger.ts";
+import { checkBsky, fetchBskyPost, handleBsky } from "./bsky.ts";
+import { checkDiscord, handleDiscord } from "./discord.ts";
+import { checkPixiv, handlePixiv } from "./pixiv.ts";
+import { checkReddit, handleReddit } from "./reddit.ts";
+import { checkTwitter, handleTwitter } from "./twitter.ts";
 
 function createOption(idx: number): HTMLOptionElement {
   const element = document.createElement("option");
@@ -33,22 +31,11 @@ function createAllOption(): HTMLOptionElement {
   return element;
 }
 
-async function search<T>(id: number): Promise<T | null> {
-  try {
-    const resp: T = await browser.tabs.sendMessage(id, {
-      action: "getImages",
-    } as Message);
-    return resp;
-  } catch (e) {
-    console.warn(e);
-    return null;
-  }
-}
-
 async function main(): Promise<void> {
-  const tab: browser.Tabs.Tab = (
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const tab: Browser.tabs.Tab = (
     await browser.tabs.query({ active: true, currentWindow: true })
-  )[0];
+  )[0]!;
   const host = new URL(tab.url ?? "").host;
 
   let optionsCount: number | null = null;
@@ -57,7 +44,11 @@ async function main(): Promise<void> {
   const id = tab.id!;
   switch (host) {
     case "x.com": {
-      const response = await search<TwitterResponse>(id);
+      const response: TwitterResponse = await messenger.sendMessage(
+        "getImagesTwitter",
+        undefined,
+        id,
+      );
       if (checkTwitter(response)) {
         return;
       }
@@ -65,17 +56,12 @@ async function main(): Promise<void> {
       submit = handleTwitter(response);
       break;
     }
-    case "xcancel.com": {
-      const response = await search<XcancelResponse>(id);
-      if (checkXcancel(response)) {
-        return;
-      }
-      optionsCount = response.media.length;
-      submit = handleXcancel(response);
-      break;
-    }
     case "discord.com": {
-      const response = await search<DiscordResponse>(id);
+      const response: DiscordResponse = await messenger.sendMessage(
+        "getImagesDiscord",
+        undefined,
+        id,
+      );
       if (checkDiscord(response)) {
         return;
       }
@@ -84,7 +70,11 @@ async function main(): Promise<void> {
       break;
     }
     case "www.pixiv.net": {
-      const response = await search<PixivResponse>(id);
+      const response: PixivResponse = await messenger.sendMessage(
+        "getImagesPixiv",
+        undefined,
+        id,
+      );
       if (checkPixiv(response)) {
         return;
       }
@@ -93,7 +83,11 @@ async function main(): Promise<void> {
       break;
     }
     case "www.reddit.com": {
-      const response = await search<RedditResponse>(id);
+      const response: RedditResponse = await messenger.sendMessage(
+        "getImagesReddit",
+        undefined,
+        id,
+      );
       if (checkReddit(response)) {
         return;
       }

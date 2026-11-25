@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # Image Downloader
 
-Download an image from Twitter, Xcancel, Discord, Pixiv, Reddit and BlueSky in one click with a useful filename. 
+Download an image from Twitter, Xcancel, Discord, Pixiv, Reddit and BlueSky in one click with a useful filename.
 
 ## How to build
 
@@ -27,7 +27,7 @@ npm run build:firefox
 
 ## Notice
 
-This project is licensed under AGPL-3.0-or-later \
+This project is licensed under AGPL-3.0-or-later\
 See [LICENCE.txt](https://github.com/sby1ce/image-downloader/blob/main/LICENCE.txt) file for details
 
 This project is using the following third-party packages

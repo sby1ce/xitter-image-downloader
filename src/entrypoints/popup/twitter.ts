@@ -4,9 +4,9 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
+import { browser } from "#imports";
 
-import type { Media, XcancelResponse } from "../content/xcancel.ts";
+import type { Media, TwitterResponse } from "@/common/twitter.ts";
 
 function constructFilename(
   poster: string,
@@ -45,7 +45,7 @@ async function downloadMedia(
 
 async function download(
   event: SubmitEvent,
-  data: XcancelResponse,
+  data: TwitterResponse,
 ): Promise<void> {
   event.preventDefault();
 
@@ -60,18 +60,20 @@ async function download(
   if (Number.isNaN(index)) {
     // All option selected
     for (let index = 0; index < data.media.length; index++) {
-      const media: Media = data.media[index];
+      // biome-ignore lint/style/noNonNullAssertion: trust me bro
+      const media: Media = data.media[index]!;
       await downloadMedia(poster, id, date, media, index);
     }
     return;
   }
 
-  const media: Media = data.media[index];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const media: Media = data.media[index]!;
   await downloadMedia(poster, id, date, media, index);
 }
 
-export function handleXcancel(
-  data: XcancelResponse,
+export function handleTwitter(
+  data: TwitterResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
     download(event, data)
@@ -79,8 +81,8 @@ export function handleXcancel(
       .catch(console.error);
 }
 
-export function checkXcancel(
-  response: XcancelResponse | null,
+export function checkTwitter(
+  response: TwitterResponse | null,
 ): response is null {
   return !response || response.media.length < 1;
 }

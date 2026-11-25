@@ -4,21 +4,9 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
-
-import type { Message } from "./common.ts";
-
-export interface Media {
-  src: string;
-  ext: string;
-}
-
-export interface TwitterResponse {
-  media: Media[];
-  poster: string;
-  date: string;
-  id: string;
-}
+import { defineContentScript } from "#imports";
+import type { Media, TwitterResponse } from "@/common/twitter.ts";
+import { messenger } from "@/messenger.ts";
 
 interface DomQueries {
   media: string;
@@ -108,7 +96,8 @@ function findDate(query: string): string {
     throw new Error("couldn't find time");
   }
   // Timestamp is in ISO format UTC+0 and we take only the date part
-  return time.dateTime.split("T")[0];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  return time.dateTime.split("T")[0]!;
 }
 
 function parseUrlId(): string {
@@ -126,21 +115,18 @@ function search(queries: DomQueries): [Media[], string, string] {
   ];
 }
 
-async function listen(
-  message: unknown,
-  _sender: browser.Runtime.MessageSender,
-): Promise<unknown> {
-  if ((message as Message).action !== "getImages") {
-    return;
-  }
-  const [media, poster, date] = search(isLoggedIn() ? logged : notLogged);
+export default defineContentScript({
+  matches: ["*://x.com/*"],
+  async main(): Promise<void> {
+    messenger.onMessage("getImagesTwitter", () => {
+      const [media, poster, date] = search(isLoggedIn() ? logged : notLogged);
 
-  return {
-    media,
-    poster,
-    date,
-    id: parseUrlId(),
-  } satisfies TwitterResponse;
-}
-
-browser.runtime.onMessage.addListener(listen);
+      return {
+        media,
+        poster,
+        date,
+        id: parseUrlId(),
+      } satisfies TwitterResponse;
+    });
+  },
+});

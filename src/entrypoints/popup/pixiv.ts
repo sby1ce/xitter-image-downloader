@@ -4,10 +4,8 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
-
-import type { BackgroundMessage } from "../background.ts";
-import type { Media, PixivResponse } from "../content/pixiv.ts";
+import type { Media, PixivResponse } from "@/common/pixiv.ts";
+import { messenger } from "@/messenger.ts";
 
 function constructFilename(
   original: string,
@@ -44,11 +42,10 @@ async function downloadMedia(
   // of downloading with fetch into blob and then downloading the blob
   // because of CORS, doing it in background script with host_permissions on manifest v3
 
-  await browser.runtime.sendMessage({
-    action: "fetch",
-    url: media.src,
+  await messenger.sendMessage("pixiv", {
+    imageUrl: media.src,
     filename,
-  } satisfies BackgroundMessage);
+  });
 }
 
 async function download(
@@ -72,7 +69,8 @@ async function download(
     return;
   }
 
-  const media: Media = data.media[index];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const media: Media = data.media[index]!;
   await downloadMedia(poster, date, media);
 }
 

@@ -4,20 +4,9 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
-
-import type { Message } from "./common.ts";
-
-export interface Media {
-  src: string;
-}
-
-export interface PixivResponse {
-  // The id alongside index is in the src string
-  media: Media[];
-  poster: string;
-  date: string;
-}
+import { defineContentScript } from "#imports";
+import type { Media, PixivResponse } from "@/common/pixiv.ts";
+import { messenger } from "@/messenger";
 
 interface DomQueries {
   media: string;
@@ -60,7 +49,8 @@ function findDate(query: string): string {
     throw new Error("couldn't find time");
   }
   // Timestamp is in ISO format UTC+0 and we take only the date part
-  return time.dateTime.split("T")[0];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  return time.dateTime.split("T")[0]!;
 }
 
 function search(queries: DomQueries): [Media[], string, string] {
@@ -71,20 +61,17 @@ function search(queries: DomQueries): [Media[], string, string] {
   ];
 }
 
-async function listen(
-  message: unknown,
-  _sender: browser.Runtime.MessageSender,
-): Promise<unknown> {
-  if ((message as Message).action !== "getImages") {
-    return;
-  }
-  const [media, poster, date] = search(queries);
+export default defineContentScript({
+  matches: ["*://www.pixiv.net/*"],
+  async main(): Promise<void> {
+    messenger.onMessage("getImagesPixiv", () => {
+      const [media, poster, date] = search(queries);
 
-  return {
-    media,
-    poster,
-    date,
-  } satisfies PixivResponse;
-}
-
-browser.runtime.onMessage.addListener(listen);
+      return {
+        media,
+        poster,
+        date,
+      } satisfies PixivResponse;
+    });
+  },
+});

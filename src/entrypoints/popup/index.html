@@ -1,5 +1,5 @@
 <!-- 
-Copyright 2025 sby1ce
+Copyright 2026 sby1ce
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Popup</title>
+    <title>Xitter Image Downloader</title>
     
     <link
       rel="preload"
@@ -19,16 +19,15 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       as="font"
       crossorigin
     />
-    <link rel="stylesheet" href="./popup.scss" />
+    <link rel="stylesheet" href="./styles.scss" />
   </head>
   <body>
     <noscript>Unfortunately this extension doesn't work with JavaScript disabled</noscript>
 
     <section>
-      <p>This extension only supports the following websites</p>
+      <p>This extension supports the following websites</p>
       <ul>
         <li>x.com</li>
-        <li>xcancel.com</li>
         <li>discord.com</li>
         <li>
           www.pixiv.net
@@ -45,6 +44,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <select name="selected"></select>
       <button type="submit">Download</button>
     </form>
-    <script defer type="module" src="./popup.ts"></script>
+    <script defer type="module" src="./main.ts"></script>
   </body>
 </html>

@@ -4,30 +4,26 @@ Copyright 2026 sby1ce
 SPDX-License-Identifier: AGPL-3.0-or-later
 */
 
-import browser from "webextension-polyfill";
+import { browser } from "#imports";
 
-import type { DiscordResponse, Media } from "../content/discord.ts";
+import type { Media, RedditResponse } from "@/common/reddit.ts";
 
 function constructFilename(
-  [original, ext]: [string, string],
+  ext: string,
   poster: string,
   date: string,
   index: number,
 ): string {
-  // No `+ 1` here unlike twitter because user never sees the number
-  // also discord can have up to 10 unlike twitter 4, so only 1 digit if it's the 10th
-  return `${original}-@${poster}-${date}-${index}.${ext}`;
+  return `${poster}-${date}-${index}.${ext}`;
 }
 
-function extractOriginalFilename(src: string): [string, string] {
+function extractExt(src: string): string {
   const url = new URL(src);
 
   // biome-ignore lint/style/noNonNullAssertion: trust me bro
   const filename: string = url.pathname.split("/").pop()!;
   const dot = filename.lastIndexOf(".");
-  const original = filename.slice(0, dot);
-  const ext = filename.slice(dot + 1);
-  return [original, ext];
+  return filename.slice(dot + 1);
 }
 
 async function downloadMedia(
@@ -37,7 +33,7 @@ async function downloadMedia(
   index: number,
 ): Promise<void> {
   const filename: string = constructFilename(
-    extractOriginalFilename(media.src),
+    extractExt(media.src),
     poster,
     date,
     index,
@@ -55,7 +51,7 @@ async function downloadMedia(
 
 async function download(
   event: SubmitEvent,
-  data: DiscordResponse,
+  data: RedditResponse,
 ): Promise<void> {
   event.preventDefault();
 
@@ -69,18 +65,20 @@ async function download(
   if (Number.isNaN(index)) {
     // All option selected
     for (let index = 0; index < data.media.length; index++) {
-      const media: Media = data.media[index];
+      // biome-ignore lint/style/noNonNullAssertion: trust me bro
+      const media: Media = data.media[index]!;
       await downloadMedia(poster, date, media, index);
     }
     return;
   }
 
-  const media: Media = data.media[index];
+  // biome-ignore lint/style/noNonNullAssertion: trust me bro
+  const media: Media = data.media[index]!;
   await downloadMedia(poster, date, media, index);
 }
 
-export function handleDiscord(
-  data: DiscordResponse,
+export function handleReddit(
+  data: RedditResponse,
 ): (event: SubmitEvent) => void {
   return (event: SubmitEvent) =>
     download(event, data)
@@ -88,8 +86,6 @@ export function handleDiscord(
       .catch(console.error);
 }
 
-export function checkDiscord(
-  response: DiscordResponse | null,
-): response is null {
+export function checkReddit(response: RedditResponse | null): response is null {
   return !response || response.media.length < 1;
 }
