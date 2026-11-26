@@ -9,12 +9,14 @@ import type { DiscordResponse } from "@/common/discord.ts";
 import type { PixivResponse } from "@/common/pixiv.ts";
 import type { RedditResponse } from "@/common/reddit.ts";
 import type { TwitterResponse } from "@/common/twitter.ts";
+import type { InstagramResponse } from "./common/instagram.ts";
 
 export interface ProtocolMap {
   getImagesTwitter(): TwitterResponse;
   getImagesDiscord(): DiscordResponse;
   getImagesPixiv(): PixivResponse;
   getImagesReddit(): RedditResponse;
+  getImagesInstagram(): InstagramResponse;
 
   pixiv(data: { imageUrl: string; filename: string }): void;
 }

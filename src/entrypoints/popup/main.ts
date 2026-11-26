@@ -7,12 +7,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 import { type Browser, browser } from "#imports";
 import type { BskyResponse } from "@/common/bsky.ts";
 import type { DiscordResponse } from "@/common/discord.ts";
+import type { InstagramResponse } from "@/common/instagram.ts";
 import type { PixivResponse } from "@/common/pixiv.ts";
 import type { RedditResponse } from "@/common/reddit.ts";
 import type { TwitterResponse } from "@/common/twitter.ts";
 import { messenger } from "@/messenger.ts";
 import { checkBsky, fetchBskyPost, handleBsky } from "./bsky.ts";
 import { checkDiscord, handleDiscord } from "./discord.ts";
+import { checkInstagram, handleInstagram } from "./instagram.ts";
 import { checkPixiv, handlePixiv } from "./pixiv.ts";
 import { checkReddit, handleReddit } from "./reddit.ts";
 import { checkTwitter, handleTwitter } from "./twitter.ts";
@@ -103,6 +105,19 @@ async function main(): Promise<void> {
       }
       optionsCount = response.media.length;
       submit = handleBsky(response);
+      break;
+    }
+    case "www.instagram.com": {
+      const response: InstagramResponse = await messenger.sendMessage(
+        "getImagesInstagram",
+        undefined,
+        id,
+      );
+      if (checkInstagram(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handleInstagram(response);
       break;
     }
     default:
