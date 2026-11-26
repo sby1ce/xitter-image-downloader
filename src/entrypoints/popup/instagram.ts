@@ -45,9 +45,7 @@ async function download(
 
   if (Number.isNaN(index)) {
     // All option selected
-    for (let index = 0; index < data.media.length; index++) {
-      // biome-ignore lint/style/noNonNullAssertion: trust me bro
-      const media: Media = data.media[index]!;
+    for (const media of data.media) {
       await downloadMedia(poster, id, date, media);
     }
     return;

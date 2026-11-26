@@ -6,10 +6,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import type { DiscordResponse } from "@/common/discord.ts";
+import type { InstagramResponse } from "@/common/instagram.ts";
+import type { PawchiveResponse } from "@/common/pawchive.ts";
 import type { PixivResponse } from "@/common/pixiv.ts";
 import type { RedditResponse } from "@/common/reddit.ts";
 import type { TwitterResponse } from "@/common/twitter.ts";
-import type { InstagramResponse } from "./common/instagram.ts";
 
 export interface ProtocolMap {
   getImagesTwitter(): TwitterResponse;
@@ -17,6 +18,7 @@ export interface ProtocolMap {
   getImagesPixiv(): PixivResponse;
   getImagesReddit(): RedditResponse;
   getImagesInstagram(): InstagramResponse;
+  getImagesPawchive(): PawchiveResponse;
 
   pixiv(data: { imageUrl: string; filename: string }): void;
 }

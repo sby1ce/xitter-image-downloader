@@ -1,12 +1,12 @@
 <!--
-Copyright 2025 sby1ce
+Copyright 2026 sby1ce
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 # Image Downloader
 
-Download an image from Twitter, Xcancel, Discord, Pixiv, Reddit and BlueSky in one click with a useful filename.
+Download an image from Twitter, Discord, Pixiv, Reddit, BlueSky, Instagram and Pawchive in one click with a useful filename.
 
 ## How to build
 

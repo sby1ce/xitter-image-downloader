@@ -8,6 +8,7 @@ import { type Browser, browser } from "#imports";
 import type { BskyResponse } from "@/common/bsky.ts";
 import type { DiscordResponse } from "@/common/discord.ts";
 import type { InstagramResponse } from "@/common/instagram.ts";
+import type { PawchiveResponse } from "@/common/pawchive.ts";
 import type { PixivResponse } from "@/common/pixiv.ts";
 import type { RedditResponse } from "@/common/reddit.ts";
 import type { TwitterResponse } from "@/common/twitter.ts";
@@ -15,6 +16,7 @@ import { messenger } from "@/messenger.ts";
 import { checkBsky, fetchBskyPost, handleBsky } from "./bsky.ts";
 import { checkDiscord, handleDiscord } from "./discord.ts";
 import { checkInstagram, handleInstagram } from "./instagram.ts";
+import { checkPawchive, handlePawchive } from "./pawchive.ts";
 import { checkPixiv, handlePixiv } from "./pixiv.ts";
 import { checkReddit, handleReddit } from "./reddit.ts";
 import { checkTwitter, handleTwitter } from "./twitter.ts";
@@ -118,6 +120,19 @@ async function main(): Promise<void> {
       }
       optionsCount = response.media.length;
       submit = handleInstagram(response);
+      break;
+    }
+    case "pawchive.pw": {
+      const response: PawchiveResponse = await messenger.sendMessage(
+        "getImagesPawchive",
+        undefined,
+        id,
+      );
+      if (checkPawchive(response)) {
+        return;
+      }
+      optionsCount = response.media.length;
+      submit = handlePawchive(response);
       break;
     }
     default:
